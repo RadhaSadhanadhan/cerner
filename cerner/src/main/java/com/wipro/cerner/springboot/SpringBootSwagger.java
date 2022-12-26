@@ -1,8 +1,6 @@
 package com.wipro.cerner.springboot;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,19 +13,19 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
+@EnableAutoConfiguration
 @EnableSwagger2
 public class SpringBootSwagger {
 
 	@Bean
 	public Docket api() {
-		return new Docket(DocumentationType.SWAGGER_2)
-				.apiInfo(new ApiInfoBuilder().title("Cerner Patient Module").build())
-			.select()
-			.apis(RequestHandlerSelectors.basePackage("com.wipro.cerner"))
-			//.paths(PathSelectors.any())
-			.build()
-			.directModelSubstitute(LocalDate.class, java.sql.Date.class)
-			.directModelSubstitute(LocalDateTime.class, java.util.Date.class);
+		return new Docket(DocumentationType.SWAGGER_2).select()
+				.apis(RequestHandlerSelectors.basePackage("com.wipro.cerner"))
+				.paths(PathSelectors.any())
+				.build()
+				.apiInfo(apiInfo())
+				.pathMapping("/");
+			
 	}
 	
 	private ApiInfo apiInfo() {

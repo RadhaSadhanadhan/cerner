@@ -1,7 +1,8 @@
 com\wipro\cerner\entity\PhoneNumber.class
 com\wipro\cerner\springboot\SpringBootStarter.class
-com\wipro\cerner\service\PatientReadService.class
 com\wipro\cerner\controller\PatientReadController.class
+com\wipro\cerner\service\PatientServiceImpl.class
+com\wipro\cerner\service\PatientService.class
 com\wipro\cerner\springboot\SpringBootSwagger.class
 com\wipro\cerner\entity\Address.class
 com\wipro\cerner\entity\Patient.class
