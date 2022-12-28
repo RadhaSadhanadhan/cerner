@@ -13,6 +13,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+/*
+ * patient Entity mapping with db
+ */
 
 @Entity
 @Table(name="cerner_patient")
@@ -31,11 +34,11 @@ public class Patient {
 	@Column(name= "cerner_patient_dob")
 	private Date patientDob;
 	
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
 	@JoinColumn(name = "cerner_patient_id", referencedColumnName = "patientId")
 	private List<Address> patientAddressList = new ArrayList<>();
 	
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
 	@JoinColumn(name = "cerner_patient_id", referencedColumnName = "patientId")
 	private  List<PhoneNumber> patientPhList = new ArrayList<>();
 
@@ -80,10 +83,4 @@ public class Patient {
 	}
 
 	
-	@Override
-	public String toString() {
-		return "Patient [patientId=" + patientId + ", patientName=" + patientName + ", patientGender=" + patientGender
-				+ ", patientDob=" + patientDob + ", patientAddressList=" + patientAddressList + ", patientPhList="
-				+ patientPhList + "]";
-	}
 }

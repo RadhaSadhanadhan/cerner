@@ -7,6 +7,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+
+/*
+ * phone number Entity mapping with db
+ */
 @Entity
 @Table(name="cerner_patient_phonenumb")
 public class PhoneNumber {
@@ -14,10 +18,7 @@ public class PhoneNumber {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer phId;
-	@Override
-	public String toString() {
-		return "PhoneNumber [phId=" + phId + ", phoneNumber=" + phoneNumber + "]";
-	}
+	
 	public Integer getPhId() {
 		return phId;
 	}

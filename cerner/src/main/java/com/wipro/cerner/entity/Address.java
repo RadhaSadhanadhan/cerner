@@ -7,6 +7,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+
+/*
+ * Adress Entity mapping with db
+ */
 @Entity
 @Table(name="cerner_patient_address")
 public class Address {
@@ -27,9 +31,6 @@ public class Address {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	@Override
-	public String toString() {
-		return "Address [addId=" + addId + ", address=" + address + "]";
-	}
+	
 
 }
