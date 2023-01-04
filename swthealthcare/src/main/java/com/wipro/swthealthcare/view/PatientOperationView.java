@@ -30,7 +30,7 @@ import com.wipro.swthealthcare.model.Patient;
 
 
 /**
- * PatientOperationView class for doing modify delte and view patient details 
+ * PatientOperationView class for doing modify delete and view patient details 
  * Having a patient list  form and patient locator to search a patient  by id 
  * will be listing the patient data and select the patient to specific operations on patient
  * @author  Radha 
@@ -50,13 +50,14 @@ public class PatientOperationView  {
 	}
 
 
+
 	/* method to set 1st page object for reuse */
 	public void setView(PatientEntryPage view) {
 		this.view = view;
 	}
 
 
-	private static final String[] SEARCH_CRITERIA = { "Patient id"};
+	private static final String[] SEARCH_CRITERIA = { "Patient id","Patient Name"};
 
 	public List<Patient> getPatientList() {
 		return patientList;
@@ -160,6 +161,8 @@ public class PatientOperationView  {
 
 
 		deleteButton.setBounds(800, 500, 150, 31);
+		Color colorDelete = new Color(display, 255, 102, 102);
+		deleteButton.setBackground(colorDelete);
 		deleteButton.setText("Delete");
 		deleteButton.setEnabled(false);
 
@@ -168,18 +171,17 @@ public class PatientOperationView  {
 		Combo combo = new Combo(shell, SWT.DROP_DOWN);
 		combo.setItems(SEARCH_CRITERIA);
 		combo.setBounds(30, 100, 120, 31);
-		combo.setText("Patient id");
 
 		Button searchButton  = new Button(shell, SWT.NONE);
 		searchButton.setBounds(600, 100, 150, 31);
 		searchButton.setText("Search");
-		Color green = display.getSystemColor(SWT.COLOR_CYAN);
-		searchButton.setBackground(green);
+		Color colorSearch = new Color(display, 51, 204, 255);
+		searchButton.setBackground(colorSearch);
 
 		Button showAllButton  = new Button(shell, SWT.NONE);
 		showAllButton.setBounds(900, 100, 150, 31);
 		showAllButton.setText("List Patient");
-		showAllButton.setBackground(green);
+		showAllButton.setBackground(colorSearch);
 
 
 
@@ -195,6 +197,9 @@ public class PatientOperationView  {
 		showAllButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				List<Patient> patientList;
+				viewButton.setEnabled(false);
+				modifyButton.setEnabled(false);
+				deleteButton.setEnabled(false);
 				try {
 					patientList = SWTHttpRestClient.fecthAllPatients();
 					setPatientList(patientList);
@@ -207,14 +212,20 @@ public class PatientOperationView  {
 
 			}
 		});
+
 		searchButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				System.out.println(combo.getText());
 				boolean isRemoveAllRows1 = table != null &&  table.getItemCount() > 0 ? true : false;
 				boolean isValidPatientId= true;
+				boolean isValidPatientName=true;
+				viewButton.setEnabled(false);
+				modifyButton.setEnabled(false);
+				deleteButton.setEnabled(false);
+				if(StringUtils.isEmpty(combo.getText())) {
+					showDailogeBox(shell, "Please select any combo value to search by");
+				}
 				if("Patient id".equalsIgnoreCase(combo.getText())) {
-
-
 					String patientId = text.getText();
 					if(StringUtils.isEmpty(patientId)) {
 						isValidPatientId=false;
@@ -266,13 +277,72 @@ public class PatientOperationView  {
 					}
 
 
+				}else {
+					if("Patient Name".equalsIgnoreCase(combo.getText())) {
+						String patienName = text.getText();
+						if(StringUtils.isEmpty(patienName)) {
+							isValidPatientName=false;
+						}else if(!view.validateAlpabets(patienName)) {
+							isValidPatientName=false;
+						}
+						if(isValidPatientName) {
+							try {
+								List<Patient> patientList = SWTHttpRestClient.getPatientByName(patienName);
+								if(patientList != null && patientList.size() > 0) {
+									createTable(display, label, font, viewButton, modifyButton, deleteButton, patientList,isRemoveAllRows1);
+								}else {
+									showDailogeBox(shell, "No data found for the searched name");
+								}
+								
+								System.out.println("patient list by name to display::"+patientList);
+							} catch (IOException | InterruptedException e) { 
+								System.out.println("exception");
+
+								MessageBox messageBox = new MessageBox(shell, SWT.ICON_WARNING);
+								messageBox.setText("Info");
+								messageBox.setMessage("No patient Details found");
+								int buttonID = messageBox.open();
+								switch(buttonID) {
+								case SWT.YES:
+									// saves changes ...
+								case SWT.NO:
+									// exits here ...
+									break;
+								case SWT.CANCEL:
+									// does nothing ...
+								}
+								System.out.println(buttonID);
+
+							}
+						}else {
+							MessageBox messageBox = new MessageBox(shell, SWT.ICON_ERROR);
+
+							messageBox.setText("error");
+							messageBox.setMessage("Please enter valid patient Name");
+							int buttonID = messageBox.open();
+							switch(buttonID) {
+							case SWT.YES:
+								// saves changes ...
+							case SWT.NO:
+								// exits here ...
+								break;
+							case SWT.CANCEL:
+								// does nothing ...
+							}
+							System.out.println(buttonID);
+						}
+
+
+						System.out.println("Search by Name");
+
+					}
+
+
+
 				}
-
-
-
 			}
-
-		});
+			
+			});
 
 
 		deleteButton.addSelectionListener(new SelectionAdapter() {
@@ -369,87 +439,87 @@ public class PatientOperationView  {
 
 		});
 
-	}
-	/*create table based on list*/
-
-	public void createTable(Display display, Label label, Font font, Button viewButton, Button modifyButton,
-			Button deleteButton, List<Patient> patientList, boolean isremoveAllfromtable) {
-		if(isremoveAllfromtable) {
-			System.out.println("INSIDE REMOVE ALL");
-			table.clearAll();
-			table.removeAll();
-			TableColumn[] column = table.getColumns();
-			for(int i =0;i<=column.length-1; i++) {
-				column[i].dispose();
-			}
-			TableItem[] items = table.getItems();
-			for(int i =0;i<=items.length-1; i++) {
-				items[i].dispose();
-			}
-		} else {
-			table = new Table(shell, SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION);
 		}
-		
-		String[] titles = { "Patient Id", "Patient Name", "Patient Gender", "Patient Dob", "Patient Address", "Patient PhoneNumber" };
-		for (int i = 0; i < titles.length; i++) {
-			TableColumn column = new TableColumn(table, SWT.ITALIC);
-			column.setWidth(100);
-			column.setText(titles[i]);
-			table.getColumn(i).pack();
-		}
-		table.setBounds(80, 200, 2000, 31);
-		Font fontTable = new Font(display, "Cambria", 10, SWT.ITALIC);
-		label.setFont(font);
-		table.setLinesVisible(true);
-		table.setHeaderVisible(true);
-		Color colorColumn = new Color(display,100,100, 50);
-		table.setFont(fontTable);
-		table.setHeaderBackground(colorColumn);
-		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
-		data.heightHint = 200;
-		table.setLayoutData(data);
+		/*create table based on list*/
 
-
-		if(patientList != null &&  patientList.size() > 0 ) {
-
-			for (Patient patientDetails : patientList){
-				TableItem item = new TableItem(table, SWT.ITALIC);
-				item.setText (0, patientDetails.getPatientId().toString());
-				item.setText (1, patientDetails.getPatientName());
-				item.setText (2, patientDetails.getPatientGender());
-				item.setText (3, patientDetails.getPatientDob().toString());
-
-				String addressList = patientDetails.getPatientAddressList().stream().map(x->x.getAddress())
-						.collect(Collectors.joining(","));
-
-				String phoneNumberList = patientDetails.getPatientPhList().stream().map(x->x.getPhoneNumber())
-						.collect(Collectors.joining(","));
-				item.setText (4, addressList);
-				item.setText (5, phoneNumberList);
-			}
-		}
-
-
-		System.out.println("table Items total : " + table.getItems().length); 
-
-		table.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event e) {
-				String string = "";
-				TableItem[] selection = table.getSelection();
-				for (int i = 0; i < selection.length; i++)
-					string += selection[i] + " ";
-				if(StringUtils.isNotEmpty(string)) {
-					viewButton.setEnabled(true);
-					modifyButton.setEnabled(true);
-					deleteButton.setEnabled(true);
+		public void createTable(Display display, Label label, Font font, Button viewButton, Button modifyButton,
+				Button deleteButton, List<Patient> patientList, boolean isremoveAllfromtable) {
+			if(isremoveAllfromtable) {
+				System.out.println("INSIDE REMOVE ALL");
+				table.clearAll();
+				table.removeAll();
+				TableColumn[] column = table.getColumns();
+				for(int i =0;i<=column.length-1; i++) {
+					column[i].dispose();
 				}
-				System.out.println("Selection of table ={" + string + "}");
+				TableItem[] items = table.getItems();
+				for(int i =0;i<=items.length-1; i++) {
+					items[i].dispose();
+				}
+			} else {
+				table = new Table(shell, SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION);
 			}
-		});
-		table.pack();
+
+			String[] titles = { "Patient Id", "Patient Name", "Patient Gender", "Patient Dob", "Patient Address", "Patient PhoneNumber" };
+			for (int i = 0; i < titles.length; i++) {
+				TableColumn column = new TableColumn(table, SWT.ITALIC);
+				column.setWidth(100);
+				column.setText(titles[i]);
+				table.getColumn(i).pack();
+			}
+			table.setBounds(80, 200, 2000, 31);
+			Font fontTable = new Font(display, "Cambria", 10, SWT.ITALIC);
+			label.setFont(font);
+			table.setLinesVisible(true);
+			table.setHeaderVisible(true);
+			Color colorColumn = new Color(display,100,100, 50);
+			table.setFont(fontTable);
+			table.setHeaderBackground(display.getSystemColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
+			GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
+			data.heightHint = 200;
+			table.setLayoutData(data);
+
+
+			if(patientList != null &&  patientList.size() > 0 ) {
+
+				for (Patient patientDetails : patientList){
+					TableItem item = new TableItem(table, SWT.ITALIC);
+					item.setText (0, patientDetails.getPatientId().toString());
+					item.setText (1, patientDetails.getPatientName());
+					item.setText (2, patientDetails.getPatientGender());
+					item.setText (3, patientDetails.getPatientDob().toString());
+
+					String addressList = patientDetails.getPatientAddressList().stream().map(x->x.getAddress())
+							.collect(Collectors.joining(","));
+
+					String phoneNumberList = patientDetails.getPatientPhList().stream().map(x->x.getPhoneNumber())
+							.collect(Collectors.joining(","));
+					item.setText (4, addressList);
+					item.setText (5, phoneNumberList);
+				}
+			}
+
+
+			System.out.println("table Items total : " + table.getItems().length); 
+
+			table.addListener(SWT.Selection, new Listener() {
+				public void handleEvent(Event e) {
+					String string = "";
+					TableItem[] selection = table.getSelection();
+					for (int i = 0; i < selection.length; i++)
+						string += selection[i] + " ";
+					if(StringUtils.isNotEmpty(string)) {
+						viewButton.setEnabled(true);
+						modifyButton.setEnabled(true);
+						deleteButton.setEnabled(true);
+					}
+					System.out.println("Selection of table ={" + string + "}");
+				}
+			});
+			table.pack();
+		}
+
+
+
+
 	}
-
-
-
-
-}

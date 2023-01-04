@@ -6,6 +6,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,9 +21,7 @@ import com.wipro.swthealthcare.model.Patient;
 * @version 1.0
 * @since   29/12/2022
 */
-
 public class SWTHttpRestClient {
-
 	 /**
 	   * This method is used to get the list of all patients details
 	   *  invoking the specific rest api using httprequest and http response
@@ -39,6 +38,12 @@ public class SWTHttpRestClient {
 		System.out.println(response.statusCode());
 		return mapper.readValue(response.body(), new TypeReference<List<Patient>>() {});
 
+	}
+	
+	public static List<Patient> getPatientByName(String name) throws IOException, InterruptedException{
+		List<Patient> patientList = fecthAllPatients();
+		List<Patient> listFilteresByPatient = patientList.stream().filter(x->name.equalsIgnoreCase(x.getPatientName())).collect(Collectors.toList());
+		return listFilteresByPatient;
 	}
 
 	   /**

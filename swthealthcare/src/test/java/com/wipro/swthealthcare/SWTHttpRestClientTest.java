@@ -1,44 +1,70 @@
 package com.wipro.swthealthcare;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-@RunWith(PowerMockRunner.class)
+import com.wipro.swthealthcare.model.Patient;
+
+
 public class SWTHttpRestClientTest {
 
-	@Mock
-	HttpRequest httpRequest;
 
-	@Mock
-	URI uri;
 
-	@Mock
-	HttpClient httpClient;
-	@Mock
-	HttpResponse httpResponse;
-	@Before
-	public void doBefore() {
-		httpRequest = Mockito.mock(HttpRequest.class);
-		uri = Mockito.mock(URI.class);
-		httpClient = Mockito.mock(HttpClient.class);
-	}
 	@Test
 	public void testFecthAll() {
 		try {
-			//Mockito.when(httpRequest.newBuilder().
-			//when(httpClient.send(any(), any(HttpResponse.BodyHandlers.ofInputStream().getClass())))
-			// .thenReturn(httpResponse);
-			SWTHttpRestClient.fecthAllPatients();
+			List<Patient> list =SWTHttpRestClient.fecthAllPatients();
+			assertNotNull(list);
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	public void fetchPatientByIdTest() {
+		try {
+			Patient pat =SWTHttpRestClient.fetchPatientById(1L);
+			assertNotNull(pat);
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+
+	@Test
+	public void savePatientTest() {
+		try {
+			Patient pat = new Patient();
+			HttpResponse<String> response =SWTHttpRestClient.savePatient(pat);
+			assertNotNull(response);
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+
+
+	@Test
+	public void updatePatientTest() {
+		try {
+			Patient pat = new Patient();
+			HttpResponse<String> response =	SWTHttpRestClient.updatePatient(pat);
+			assertNotNull(response);
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	@Test
+	public void deletePatientstest() {
+		try {
+			SWTHttpRestClient.deletePatient(1l);
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}

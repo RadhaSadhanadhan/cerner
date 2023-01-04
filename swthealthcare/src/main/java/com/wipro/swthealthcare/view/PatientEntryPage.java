@@ -264,12 +264,12 @@ public class PatientEntryPage {
 
 		createButton  = new Button(shellCreate, SWT.NONE);
 		createButton.setBounds(620, 570, 180, 31);
-		createButton.setText("CREATE");
-		Color color = new Color(display, 0, 220, 150);
+		createButton.setText("SAVE");
+		Color color = new Color(display, 0, 204, 0);
 		createButton.setBackground(color);
 
 		modify = new Button(shellCreate, SWT.NONE);
-		modify.setBounds(750, 570, 180, 31);
+		modify.setBounds(800, 570, 180, 31);
 		modify.setText("MODIFY");
 		modify.setBackground(color);
 		modify.setVisible(false);
@@ -390,6 +390,7 @@ public class PatientEntryPage {
 		if(isAllDataValid) {
 			Patient patient;
 			if(ismodify) {
+				System.out.println("Inside modified today");
 				patient = constructPatientObject(name, gender, patientDob,phoneNumber,address1 ,phoneNumber2, address2,availablePatient, true);
 			}else {
 				this.setAvailablePatient(null);
@@ -417,8 +418,6 @@ public class PatientEntryPage {
 						"Error while creating new patient");
 			}
 		}
-
-
 	}
 
 	/* method to create default values setting in form */
@@ -437,8 +436,8 @@ public class PatientEntryPage {
 	}
 
 	/* method to validate characters setting in form */
-	private  boolean validateAlpabets(String input)  {
-		String regex = "^[a-zA-Z\\\\s]*$";
+	public  boolean validateAlpabets(String input)  {
+		String regex ="[a-zA-Z][a-zA-Z ]+[a-zA-Z]$";
 		boolean isValidInput = false;
 		Pattern p = Pattern.compile(regex);
 		if (!Objects.isNull(input)) {
@@ -528,7 +527,6 @@ public class PatientEntryPage {
 			addressText2.setText("");
 			addressCityText2.setText("");
 			addressPicodeText2.setText(""); 
-
 		}
 		this.setAvailablePatient(patient);
 		if(isDisabled) {
@@ -587,10 +585,11 @@ public class PatientEntryPage {
 		}
 		addressObj1.setAddress(address1);
 		addressList.add(addressObj1);
+		
 		if(StringUtils.isNotEmpty(address2)) {
 			Address addressObj2 = new Address(); 
-			if(isModify && oldPatient.getPatientAddressList()!= null && oldPatient.getPatientAddressList().size() == 2) {
-				addressObj1.setAddId(oldPatient.getPatientAddressList().get(1).getAddId());
+			if(isModify && oldPatient.getPatientAddressList() != null && oldPatient.getPatientAddressList().size() == 2) {
+				addressObj2.setAddId(oldPatient.getPatientAddressList().get(1).getAddId());
 			}
 			addressObj2.setAddress(address2);
 			addressList.add(addressObj2);
@@ -606,14 +605,14 @@ public class PatientEntryPage {
 		if(StringUtils.isNotEmpty(phoneNumber2)) {
 			PhoneNumber phoneNumberObj2= new PhoneNumber();
 			if(isModify && oldPatient.getPatientPhList()!= null && oldPatient.getPatientPhList().size() == 2) {
-				phoneNumberObj1.setPhId(oldPatient.getPatientPhList().get(0).getPhId());
+				phoneNumberObj2.setPhId(oldPatient.getPatientPhList().get(1).getPhId());
 			}
 			phoneNumberObj2.setPhoneNumber(phoneNumber2);
 			phoneNumberList.add(phoneNumberObj2);
 		}
 		patient.setPatientAddressList(addressList);
 		patient.setPatientPhList(phoneNumberList);
-		System.out.println(patient);
+		System.out.println("patient object before going to modify"+patient);
 
 
 
