@@ -76,6 +76,8 @@ public class PatientEntryPage {
 	Button createButton ;
 
 	Button modify ;
+	
+	DateTime time;
 
 	public Patient getAvailablePatient() {
 		return availablePatient;
@@ -222,6 +224,10 @@ public class PatientEntryPage {
 
 		dateTimeText = new DateTime(shellCreate, SWT.BORDER);
 		dateTimeText.setBounds(300, 200, 300, 31);
+		
+		 time = new DateTime (shellCreate, SWT.TIME);
+		time.setBounds(700, 200, 300, 31);
+		
 
 		phoneNumberText = new Text(shellCreate, SWT.BORDER);
 		phoneNumberText.setBounds(300, 260, 300, 31);
@@ -276,6 +282,7 @@ public class PatientEntryPage {
 		locateButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				PatientOperationView opView = new PatientOperationView(display);
+				//String pateientNameToSearch = nameText.getText();
 				opView.setView(view);
 				opView.showPatientDetails(false);
 			}
